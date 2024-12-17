@@ -6,7 +6,7 @@
 
 <a href='https://zhuang2002.github.io/ColorFlow/'><img src='https://img.shields.io/badge/Project-Page-Green'></a> &nbsp;
 <a href='https://huggingface.co/spaces/TencentARC/ColorFlow'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-blue'></a> &nbsp;
-<a href=""><img src="https://img.shields.io/static/v1?label=Arxiv Preprint&message=ColorFlow&color=red&logo=arxiv"></a> &nbsp;
+<a href="https://arxiv.org/abs/2412.11815"><img src="https://img.shields.io/static/v1?label=Arxiv Preprint&message=ColorFlow&color=red&logo=arxiv"></a> &nbsp;
 <a href="https://huggingface.co/TencentARC/ColorFlow"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue"></a>
 
 **Your star means a lot for us to develop this project!** :star:
@@ -93,11 +93,14 @@ We are grateful for the valuable resources and insights provided by these projec
 ### 📜 Citation
 
 ```
-@article{zhuang2024colorflow,
-    title={ColorFlow: Retrieval-Augmented Image Sequence Colorization},
-    author={Zhuang, Junhao and Ju, Xuan and Zhang, Zhaoyang and Liu, Yong and Zhang, Shiyi and Yuan, Chun and Shan, Ying},
-    journal={},
-    year={2024}
+@misc{zhuang2024colorflow,
+title={ColorFlow: Retrieval-Augmented Image Sequence Colorization},
+author={Junhao Zhuang and Xuan Ju and Zhaoyang Zhang and Yong Liu and Shiyi Zhang and Chun Yuan and Ying Shan},
+year={2024},
+eprint={2412.11815},
+archivePrefix={arXiv},
+primaryClass={cs.CV},
+url={https://arxiv.org/abs/2412.11815},
 }
 ```
 

@@ -172,7 +172,7 @@ examples = [
         ["./assets/example_1/ref1.jpg", "./assets/example_1/ref2.jpg", "./assets/example_1/ref3.jpg"], 
         "Sketch",  
         "640x640", 
-        1, 
+        0, 
         10  
     ],
     [
@@ -180,7 +180,7 @@ examples = [
         ["./assets/example_0/ref1.jpg"], 
         "Sketch", 
         "640x640",  
-        1, 
+        0, 
         10 
     ],
 ]

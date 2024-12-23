@@ -25,7 +25,9 @@ To evaluate our model, we introduce **ColorFlow-Bench**, a comprehensive benchma
 
 ### 📰 News
 
-- **Release Date:** 2024.12.17 - Inference code and model weights have been released! 🎉
+- **Update Date:** December 23, 2024 - We have released the weights for the Sketch_Shading model, along with updates to the related code and demo. You can access the model weights in our [Hugging Face model repository](https://huggingface.co/TencentARC/ColorFlow) and explore the updated demo [here](https://huggingface.co/spaces/TencentARC/ColorFlow). 🎉🔥
+
+- **Release Date:** December 17, 2024 - The inference code and model weights have also been released! 🎉
 
 ### 📋 TODO
 

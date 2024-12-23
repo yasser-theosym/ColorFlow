@@ -64,6 +64,31 @@ from util import util
 
 from huggingface_hub import snapshot_download
 
+
+article = r"""
+If ColorFlow is helpful, please help to ⭐ the <a href='https://github.com/TencentARC/ColorFlow' target='_blank'>Github Repo</a>. Thanks! [![GitHub Stars](https://img.shields.io/github/stars/TencentARC/ColorFlow)](https://github.com/TencentARC/ColorFlow)
+---
+
+📧 **Contact**
+<br>
+If you have any questions, please feel free to reach me out at <b>zhuangjh23@mails.tsinghua.edu.cn</b>.
+
+📝 **Citation**
+<br>
+If our work is useful for your research, please consider citing:
+```bibtex
+@misc{zhuang2024colorflow,
+      title={ColorFlow: Retrieval-Augmented Image Sequence Colorization}, 
+      author={Junhao Zhuang and Xuan Ju and Zhaoyang Zhang and Yong Liu and Shiyi Zhang and Chun Yuan and Ying Shan},
+      year={2024},
+      eprint={2412.11815},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2412.11815},
+}
+```
+"""
+
 model_global_path = snapshot_download(repo_id="TencentARC/ColorFlow", cache_dir='./colorflow/', repo_type="model")
 print(model_global_path)
 
@@ -127,11 +152,27 @@ examples = [
         10  
     ],
     [
+        "./assets/example_6/input.png", 
+        ["./assets/example_6/ref1.png", "./assets/example_6/ref2.png", "./assets/example_6/ref3.png"], 
+        "Sketch_Shading", 
+        "512x800",  
+        0, 
+        10 
+    ],
+    [
+        "./assets/example_7/input.jpg", 
+        ["./assets/example_7/ref1.jpg", "./assets/example_7/ref2.jpg", "./assets/example_7/ref3.jpg", "./assets/example_7/ref4.jpg"], 
+        "Sketch_Shading", 
+        "640x640",  
+        2, 
+        10 
+    ],
+    [
         "./assets/example_1/input.jpg", 
         ["./assets/example_1/ref1.jpg", "./assets/example_1/ref2.jpg", "./assets/example_1/ref3.jpg"], 
         "Sketch",  
         "640x640", 
-        0, 
+        1, 
         10  
     ],
     [
@@ -139,7 +180,7 @@ examples = [
         ["./assets/example_0/ref1.jpg"], 
         "Sketch", 
         "640x640",  
-        0, 
+        1, 
         10 
     ],
 ]
@@ -150,9 +191,13 @@ global MultiResNetModel
 def load_ckpt(input_style):
     global pipeline
     global MultiResNetModel
-    if input_style == "Sketch":
-        ckpt_path = model_global_path + '/sketch/'
-        rank = 128
+    if input_style == "Sketch" or input_style == "Sketch_Shading":
+        if input_style == "Sketch":
+            ckpt_path = model_global_path + '/sketch/'
+            rank = 128
+        else:
+            ckpt_path = model_global_path + '/shading/'
+            rank = 128
         pretrained_model_name_or_path = 'PixArt-alpha/PixArt-XL-2-1024-MS'
         transformer = PixArtTransformer2DModel.from_pretrained(
             pretrained_model_name_or_path, subfolder="transformer", revision=None, variant=None
@@ -233,8 +278,6 @@ def load_ckpt(input_style):
 global cur_input_style
 cur_input_style = None
 
-
-
 def fix_random_seeds(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -312,6 +355,17 @@ def extract_line_image(query_image_, input_style, resolution):
         extracted_line = extract_lines(query_image)
         extracted_line = extracted_line.convert('L').convert('RGB')
         input_context = extracted_line
+    elif input_style == "Sketch_Shading":
+        query_image = query_image.convert('L').convert('RGB')
+        extracted_line = extract_lines(query_image)
+        extracted_line = extracted_line.convert('L').convert('RGB')
+        array1 = np.array(query_image)
+        array2 = np.array(extracted_line)
+        array2[array1 < 0.3 * 255.0] = 0
+        gray_rate = 125
+        up_bound = 145
+        array2[(array2 > gray_rate) & (array1 < up_bound) & (array1 > 0.3 * 255.0)] = gray_rate
+        input_context = Image.fromarray(np.uint8(array2))
     torch.cuda.empty_cache()
     return input_context, extracted_line, input_context  
 
@@ -415,7 +469,7 @@ with gr.Blocks() as demo:
     <h3 style="text-align: center; font-size: 1.8em;">Retrieval-Augmented Image Sequence Colorization</h3>
     <p style="text-align: center; font-weight: bold;">
         <a href="https://zhuang2002.github.io/ColorFlow/">Project Page</a> | 
-        <a href="">ArXiv Preprint</a> | 
+        <a href="https://arxiv.org/abs/2412.11815">ArXiv Preprint</a> | 
         <a href="https://github.com/TencentARC/ColorFlow">GitHub Repository</a>
     </p>
     <p style="text-align: center; font-weight: bold;">
@@ -427,7 +481,7 @@ with gr.Blocks() as demo:
 </div>
 <div style="text-align: left; margin: 0 auto;">
     <ol style="font-size: 1.1em;">
-        <li>Choose input style: GrayImage(ScreenStyle) or Sketch.</li>
+        <li>Choose input style: GrayImage(ScreenStyle)、Sketch with Shading or Sketch.</li>
         <li>Upload your image: Use the 'Upload' button to select the image you want to colorize.</li>
         <li>Preprocess the image: Click the 'Preprocess' button to decolorize the image.</li>
         <li>Upload reference images: Upload multiple reference images to guide the colorization.</li>
@@ -447,7 +501,7 @@ with gr.Blocks() as demo:
 </div>
 <div style="text-align: left; margin: 0 auto;">
     <ol style="font-size: 1.1em;">
-        <li>选择输入样式：灰度图(ScreenStyle)、线稿。</li>
+        <li>选择输入样式：灰度图(ScreenStyle)、线稿+阴影、线稿。</li>
         <li>上传您的图像：使用“上传”按钮选择要上色的图像。</li>
         <li>预处理图像：点击“预处理”按钮以去色图像。</li>
         <li>上传参考图像：上传多张参考图像以指导上色。</li>
@@ -465,7 +519,7 @@ with gr.Blocks() as demo:
     
     with gr.Column():
         with gr.Row():
-            input_style = gr.Radio(["GrayImage(ScreenStyle)", "Sketch"], label="Input Style", value="GrayImage(ScreenStyle)")
+            input_style = gr.Radio(["GrayImage(ScreenStyle)", "Sketch_Shading", "Sketch"], label="Input Style", value="GrayImage(ScreenStyle)")
         with gr.Row():
             with gr.Column():
                 input_image = gr.Image(type="pil", label="Image to Colorize")
@@ -500,6 +554,9 @@ with gr.Blocks() as demo:
             examples=examples,
             inputs=[input_image, reference_images, input_style, resolution, seed, num_inference_steps],
             label="Examples",
-            examples_per_page=6,
+            examples_per_page=8,
         )
+    gr.HTML('<a href="https://github.com/TencentARC/ColorFlow"><img src="https://img.shields.io/github/stars/TencentARC/ColorFlow" alt="GitHub Stars"></a>')
+    gr.Markdown(article)
+
 demo.launch()

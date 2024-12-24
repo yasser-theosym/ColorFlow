@@ -58,9 +58,9 @@ from diffusers import (
 from colorflow_utils.utils import *
 
 sys.path.append('./BidirectionalTranslation')
-from options.test_options import TestOptions
-from models import create_model
-from util import util
+from BidirectionalTranslation.options.test_options import TestOptions
+from BidirectionalTranslation.models import create_model
+from BidirectionalTranslation.util import util
 
 from huggingface_hub import snapshot_download
 
@@ -559,4 +559,4 @@ with gr.Blocks() as demo:
     gr.HTML('<a href="https://github.com/TencentARC/ColorFlow"><img src="https://img.shields.io/github/stars/TencentARC/ColorFlow" alt="GitHub Stars"></a>')
     gr.Markdown(article)
 
-demo.launch()
+demo.launch(share=True)
